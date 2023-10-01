@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h2>Movie Creator</h2>
+
+<input id="imdbid" type="text" id="title" placeholder="Add imdbId for movie to create">
+<button id="create-btn">Create Movie</button>
+Find Movie: <input type="text" id="find-id" placeholder="Enter id for movie">
+<button id="find-btn">Find Movie</button>
+<p int id="result"></p>
+<image src="./spin-1s-200px.gif" id="spinner" style="display: none;"/>
+
+<script>
+    document.getElementById("create-btn").onclick = addMovie
+    document.getElementById("find-btn").onclick = findMovie
+
+    async function addMovie() {
+        try {
+            document.getElementById("result").innerText = ""
+            document.getElementById("spinner").style.display = "block"
+            const id = document.getElementById("imdbid").value
+            const movie = await fetch("/api/movies/" + id, {method: "POST"}).then((res) => {
+                    if (!res.ok) {
+                        throw Error("Could not create movie")
+                    }
+                    return res.json()
+                }
+            )
+            document.getElementById("result").innerText = JSON.stringify(movie, null, 2)
+        } catch (e) {
+            document.getElementById("result").innerText = e.message
+        }
+        finally {
+            document.getElementById("spinner").style.display = "none"
+        }
+    }
+
+    async function findMovie(){
+        const id = document.getElementById("find-id").value
+        try {
+        const movie = await fetch("/api/movies/id/" + id, {method: "POST"}).then((res) => {
+                if (!res.ok) {
+                    throw Error("Could not find movie")
+                }
+                return res.json()
+            }
+        )
+        document.getElementById("result").innerText = JSON.stringify(movie, null, 2)
+    } catch (e) {
+            document.getElementById("result").innerText = e.message
+    }
+
+    }
+
+</script>
+
+
+</body>
+</html>
